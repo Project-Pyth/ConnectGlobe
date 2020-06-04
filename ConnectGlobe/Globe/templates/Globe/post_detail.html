@@ -1,0 +1,22 @@
+{% extends 'Globe/Base1.html'%}
+{% load static%}
+{% block content %}
+<center style="color: #2e4ead;"><h1>YOUR POSTS</h1></center>
+
+<h3>Q:-   {{object.title}}</h3>
+<h3><u>Category</u>:-   {{object.category}}</h3>
+<h3><u>By</u>:-   {{object.name}}</h3>
+<h3 style="text-align:justify;"><u>Content</u>:-   {{object.content| truncatechars:146}}</h3>
+<a href="/Globe/{{post.slug}}" class="btn btn-primary">Continue Reading</a>
+
+{% if object.file %}
+	<!--<embed src="object.file.pdf" type="application/pdf" width="10%" height="60px" /><br>-->
+	<a href="{{object.file.url}}" class="btn btn-info" target="_blank" >Click to open</a>
+{% endif%}
+
+{% if object.name == user %}
+	<a class="btn btn-success" href="{% url 'post_update' object.id%}" >UPDATE</a>
+	<a class="btn btn-danger" href="{% url 'post_delete' object.id%}" >DELETE</a>
+{% endif %}
+<br>
+{% endblock %}
