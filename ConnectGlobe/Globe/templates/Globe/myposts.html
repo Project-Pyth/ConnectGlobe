@@ -6,37 +6,40 @@
 <div class="item">
 
 	{% for post in posts %}
-	<h3 style="color:#2e4ead;"><u>Title</u>:-    <a href="{% url 'post_detail' post.id%}">{{post.title}}</a></h3>
-	<h3><u>Category</u>:-    {{post.category}}</h3>
-	<h3><u>Content</u>:-   {{post.content| truncatechars:120}}</h3>
-	{% if post.file %}
-	    <a href="{{post.file.url}}" class="btn btn-info" target="_blank" >Click to open</a>
-	{% endif%}
+	<div class="col-md-12">
+		<h3 class="col-md-8" style="color: #2e4ead;"><a href="{% url 'post_detail' post.id%}">{{post.title}}</a></h3>
+		<h3 class="col-md-4 text-right">({{post.category}})</h3>
+	</div><br/><br/>
+	<div style="margin-left:3%;">
+		<h3><u>Content</u>:-   {{post.content}}</h3>
+		{% if post.file %}
+			<a href="{{post.file.url}}" class="btn btn-info" target="_blank" >Click to open</a>
+		{% endif%}
 
-	<h4>{{post.date_posted}}</h4>
-	<div class="line"></div>
+		<h4>{{post.date_posted}}</h4>
+		<div class="line"></div>
 
-	{% endfor %}
+		{% endfor %}
 
 
-	{% if posts.has_previous %}
-		<a href="?page=1" class="btn btn-primary">First</a>
-		<a href="?page={{ posts.previous_page_number}}" class="btn btn-primary">Previous</a>
-	{% endif %}
-
-	{% for num in posts.paginator.page_range %}
-		{% if posts.number == num %}
-			<a href="?page={{ num }}" class="btn btn-primary"><strong>{{ num }}</strong></a>
-		{% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
-			<a href="?page={{ num }}" class="btn btn-primary">{{ num }}</a>
+		{% if posts.has_previous %}
+			<a href="?page=1" class="btn btn-primary">First</a>
+			<a href="?page={{ posts.previous_page_number}}" class="btn btn-primary">Previous</a>
 		{% endif %}
-	{% endfor %}
 
-	{% if posts.has_next %}
-		<a href="?page={{ posts.next_page_number}}" class="btn btn-primary">Next</a>
-		<a href="?page={{ posts.paginator.num_pages }}" class="btn btn-primary">Last</a>
-	{% endif %}
+		{% for num in posts.paginator.page_range %}
+			{% if posts.number == num %}
+				<a href="?page={{ num }}" class="btn btn-primary"><strong>{{ num }}</strong></a>
+			{% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+				<a href="?page={{ num }}" class="btn btn-primary">{{ num }}</a>
+			{% endif %}
+		{% endfor %}
 
+		{% if posts.has_next %}
+			<a href="?page={{ posts.next_page_number}}" class="btn btn-primary">Next</a>
+			<a href="?page={{ posts.paginator.num_pages }}" class="btn btn-primary">Last</a>
+		{% endif %}
+	</div>
 </div>
 				<!--{{ posts.number }}
 				{{ posts.paginator.count }}
