@@ -19,15 +19,35 @@
             <h3 class="col-md-4 text-right">({{post.category}})</h3>
 	    </div><br/><br/>
         <div style="margin-left:3%;">
-            <h3 style="text-align:justify; "><u>Content</u>:- {{post.content}}</h3>
+            <div class="text-black" style="text-align:justify; ">{{post.content | safe}}</div>
             {% if post.file %}
                 <a href="{{post.file.url}}" class="btn btn-info" target="_blank" >Click to open</a>
             {% endif%}
 
+
             <blockquote class="blockquote">
                 <footer class="blockquote-footer">by <cite title="Source Title">{{post.name|capfirst}} ({{post.date_posted|naturaltime}})</cite></footer>
-            </blockquote>
+
+            </blockquote><br/>
+
+            {% if is_favourite %}
+            <a href="{% url 'favourite_post' post.id%}"><i class="fas fa-heart btn btn-primary"></i></a>
+            {% else %}
+            <a href="{% url 'favourite_post' post.id %}"><i class="far fa-heart btn btn-primary"></i></a>
+            {% endif %}
+
+            {% if post.category == 'HTML/CSS/Bootstrap-Coding' %}
+                <a href="/compiler" class="btn btn-primary" target="_blank" >Try Yourself</a>
+            {% endif%}
+
+            <div class="fb-share-button" data-href="http://127.0.0.1:8000//Globe/{{post.slug}}" data-layout="button_count" data-size="large"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fconnectglobe.herokuapp.com%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a></div>
+            <div class="fb-like" data-href="http://127.0.0.1:8000//Globe/{{post.slug}}" data-width="" data-layout="standard" data-action="like" data-size="large" data-share="false"></div>
+
+
         </div>
+
+
+
     </div>
     <div class="line"></div>
     <div class="main-content-section">
