@@ -3,7 +3,7 @@ from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import auth, User
 from django.core.mail import send_mail
 
@@ -43,7 +43,7 @@ def connect_login(request):
 
 def logout(request):
     auth.logout(request)
-    return redirect('/index')
+    return redirect('/')
 
 
 def connect_register(request):
@@ -84,7 +84,7 @@ def connect_register(request):
                     #   "Welcome to Email Confirmation",
                     #  "btesinstitute74@gmail.com",
                     # [em],
-                    #fail_silently=False,
+                   # fail_silently=False,
                  #)
                 send_mail(
                         subject,
@@ -109,14 +109,35 @@ def index(request):
     return render(request, "Globe/index.html")
 
 
+@login_required(login_url='/login/')
+def compiler(request):
+    return render(request, "Globe/compiler.html")
+
+
 def about(request):
     return render(request, "Globe/about.html")
+
+
+def favourite_post(request, id):
+    post = get_object_or_404(Post, id=id)
+    if post.favourite.filter(id=request.user.id).exists():
+        post.favourite.remove(request.user)
+    else:
+        post.favourite.add(request.user)
+    return redirect('/favourite_post_list')
+
+
+def post_favourite_list(request):
+    user = request.user
+    favourite_posts = user.favourite.all()
+    context = {'favourite_posts': favourite_posts}
+    return render(request, "Globe/favourite.html",context)
 
 
 @login_required(login_url='/login/')
 def view_status(request):
     posts = Post.objects.filter(name=request.user)
-    paginator = Paginator(posts, 1)
+    paginator = Paginator(posts, 5)
     page = request.GET.get('page')  # page variable is used to get page number that we passing in view
     # ?page=2
     posts = paginator.get_page(page)  # to access the items in page use get_page method
@@ -129,16 +150,22 @@ class PostListView(ListView):
     template_name = 'Globe/view_status.html'
     context_object_name = 'posts'
     ordering = ['-date_posted']
-    paginate_by = 3
+    paginate_by = 5
 
 
 class PostDetailView(DetailView):
     model = Post
 
 
+@login_required(login_url='/login/')
 def continuepost(request, slug):
     post = Post.objects.filter(slug=slug).first()
     comments = PostComment.objects.filter(post=post, reply=None)
+
+    is_favourite = False
+
+    if post.favourite.filter(id=request.user.id).exists():
+        is_favourite = True
 
     if request.method == 'POST':
         commentform = CommentForm(request.POST or None)
@@ -153,7 +180,7 @@ def continuepost(request, slug):
     else:
         commentform = CommentForm()
 
-    context = {'post': post, 'comments': comments, 'commentform': commentform}
+    context = {'post': post, 'comments': comments, 'commentform': commentform, 'is_favourite':is_favourite}
     return render(request, "Globe/continue.html", context)
 
 
@@ -161,6 +188,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     login_url = '/login/'
     model = Post
     fields = ['title', 'category', 'slug', 'content', 'file']
+    success_url = '/post_approve'
 
     def form_valid(self, form):
         form.instance.name = self.request.user
@@ -184,6 +212,7 @@ def search(request):
 class PostUpdateView(UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'category', 'slug', 'content', 'file']
+    success_url = '/view_status'
 
     def form_valid(self, form):
         form.instance.name = self.request.user
@@ -206,7 +235,7 @@ class PostDeleteView(UserPassesTestMixin, DeleteView):
             return True
         return False
 
-@login_required(login_url='/login/')
+
 def feedback(request):
     if request.method == 'POST':
         name = request.POST.get('name', '')
@@ -224,6 +253,10 @@ def email_confirm_msg(request):
 
 def confirmed_email(request):
     return render(request, "Globe/confirmed_email.html")
+
+
+def post_approve(request):
+    return render(request, "Globe/approve.html")
 
 
 def dev_team(request):
