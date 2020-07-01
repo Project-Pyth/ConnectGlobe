@@ -1,0 +1,27 @@
+{% extends 'Globe/Base1.html'%}
+{% load static%}
+{% block content %}
+
+<center style="color: #2e4ead;"><h1>Favourite Posts</h1></center>
+<div >
+
+{% for post in favourite_posts %}
+	<div class="col-md-12">
+
+		<h3 class="col-md-8" style="color: #2e4ead;"><a href="{% url 'post_detail' post.id%}">{{post.title}}</a></h3>
+		<h3 class="col-md-4 text-right">({{post.category}})</h3>
+	</div><br/><br/>
+	<div>
+		<div class="text-black" style="text-align:justify; margin-left:3%;">{{post.content| truncatechars:146 | safe}}</div>
+		<h3 style="margin-left:3%;"><a href="/Globe/{{post.slug}}" class="btn btn-primary">Continue Reading</a></h3>
+	</div>
+	<div class="line"></div>
+    {% empty %}
+    <div class="mx-5 my-5">
+        <h3>No Post In Your Favourite List</h3>
+    </div>
+
+{% endfor %}
+
+</div>
+{% endblock %}
