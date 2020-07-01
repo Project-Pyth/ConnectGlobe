@@ -1,0 +1,21 @@
+{% extends 'Globe/Base1.html'%}
+{% load crispy_forms_tags %}
+{% load static%}
+{% block content %}
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="{% static 'css/post_form.css' %}">
+</head>
+<body>
+<div class="main-container">
+   <div class="contain">
+     <h5>PENDING POST</h5>
+     <h3 style="text-align:justify; margin-top:6%;">Your Post is Submit Successfully.
+         It Will Approve/Disapprove By Admin within 24 hours First And Then Display in Posts.
+     </h3>
+
+   </div>
+</div>
+</body>
+</html>
+{% endblock %}
